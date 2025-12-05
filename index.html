@@ -11,15 +11,31 @@
     <script type="importmap">
 {
   "imports": {
-    "vue": "https://aistudiocdn.com/vue@3.3.4/dist/vue.esm-browser.js",
-    "three": "https://aistudiocdn.com/three@^0.181.2",
-    "gsap": "https://aistudiocdn.com/gsap@^3.13.0",
+    "vue": "https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js",
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+    "gsap": "https://unpkg.com/gsap@3.12.5/index.js",
+    "gsap/ScrollTrigger": "https://unpkg.com/gsap@3.12.5/ScrollTrigger.js",
     "react": "https://aistudiocdn.com/react@^19.2.1",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
     "react/": "https://aistudiocdn.com/react@^19.2.1/"
   }
 }
 </script>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        background-color: #050505; /* Fallback color */
+      }
+      #app {
+        width: 100%;
+        min-height: 100%;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>

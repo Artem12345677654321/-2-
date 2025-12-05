@@ -11,11 +11,12 @@ let particles: THREE.Points;
 let animationFrameId: number;
 
 const initThree = () => {
-  if (!canvasRef.current) return;
+  if (!canvasRef.value) return;
 
   // 1. Scene
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x000000, 0.002);
+  // Using a slightly lighter fog to show depth against the black background
+  scene.fog = new THREE.FogExp2(0x050505, 0.002);
 
   // 2. Camera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -23,25 +24,27 @@ const initThree = () => {
 
   // 3. Renderer
   renderer = new THREE.WebGLRenderer({
-    canvas: canvasRef.current,
-    alpha: true,
+    canvas: canvasRef.value,
+    alpha: true, // Critical for CSS background to show
     antialias: true,
     powerPreference: 'high-performance'
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // 4. Content (Particles)
+  // 4. Content - Particles
   const geometry = new THREE.BufferGeometry();
-  const count = 1500;
+  const count = 2000;
   const positions = new Float32Array(count * 3);
 
   for (let i = 0; i < count * 3; i++) {
-    positions[i] = (Math.random() - 0.5) * 15;
+    positions[i] = (Math.random() - 0.5) * 20; // Spread them out more
+    positions[i + 1] = (Math.random() - 0.5) * 20;
+    positions[i + 2] = (Math.random() - 0.5) * 20;
   }
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-  // Create texture programmatically
+  // Texture Generation
   const getTexture = () => {
     const canvas = document.createElement('canvas');
     canvas.width = 32;
@@ -60,11 +63,11 @@ const initThree = () => {
   };
 
   const material = new THREE.PointsMaterial({
-    size: 0.06,
+    size: 0.08, // Slightly larger for visibility
     map: getTexture(),
     transparent: true,
-    opacity: 0.3,
-    color: 0xA08A6F, // Premium Accent Color
+    opacity: 0.6, // Higher opacity
+    color: 0xA08A6F, // Accent Color
     depthWrite: false,
     blending: THREE.AdditiveBlending
   });
@@ -77,8 +80,8 @@ const renderScene = () => {
   animationFrameId = requestAnimationFrame(renderScene);
 
   if (particles) {
-    particles.rotation.y += 0.0005;
-    particles.rotation.x += 0.0002;
+    particles.rotation.y += 0.0003;
+    particles.rotation.x += 0.0001;
   }
 
   renderer.render(scene, camera);
@@ -114,9 +117,9 @@ onUnmounted(() => {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0; 
   pointer-events: none;
 }
 </style>

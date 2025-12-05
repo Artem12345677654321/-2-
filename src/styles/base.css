@@ -1,21 +1,29 @@
 :root {
-  --color-background: #000;
+  --color-background: #050505; /* Deep luxury black */
   --color-text: #F0F0F0; /* Soft White */
   --color-accent: #A08A6F; /* Golden-Bronze Accent */
-  --font-family-serif: 'Playfair Display', serif; /* Using Playfair as PSTimes placeholder */
+  --font-family-serif: 'Playfair Display', serif;
   --font-family-sans: 'Inter', sans-serif;
 }
 
-body {
+html, body {
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--color-background);
   color: var(--color-text);
   font-family: var(--font-family-sans);
   cursor: none; /* Hide default cursor */
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -34,5 +42,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Utility for interactive targets */
 .interactive-target {
-  cursor: none; /* Ensure system cursor is hidden */
+  cursor: none; 
+}
+
+/* Canvas z-index fix */
+.webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0; /* Behind content */
+  pointer-events: none;
 }
