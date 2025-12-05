@@ -1,9 +1,18 @@
+:root {
+    --color-background: #000000;
+    --color-text: #E0E0E0;
+    --color-accent: #A08A6F; /* Gold/Bronze */
+    --font-family-serif: 'Times New Roman', serif;
+    --font-family-sans: 'Arial', sans-serif;
+}
+
 body {
     margin: 0;
-    overflow: hidden;
-    background-color: #000;
+    overflow-x: hidden;
+    background-color: var(--color-background);
+    color: var(--color-text);
     cursor: none; /* Hide default cursor */
-    font-family: sans-serif;
+    font-family: var(--font-family-sans);
 }
 
 #webgl-canvas {
@@ -13,30 +22,74 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 0;
 }
 
 #content {
     position: relative;
     z-index: 10;
-    pointer-events: none; /* Let clicks pass through to canvas generally */
     width: 100%;
-    height: 100vh;
 }
 
+.section {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.text-container {
+    max-width: 800px;
+}
+
+h1, h2 {
+    font-family: var(--font-family-serif);
+    font-weight: normal;
+    margin: 0.2em 0;
+}
+
+h1 {
+    font-size: 5rem;
+    color: #fff;
+}
+
+h2 {
+    font-size: 4rem;
+    color: var(--color-accent);
+}
+
+.subtitle {
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+}
+
+.description {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-top: 2rem;
+    font-weight: 300;
+}
+
+/* Cursor Styles */
 .cursor-outer {
     position: fixed;
     top: 0;
     left: 0;
     width: 40px;
     height: 40px;
-    border: 1px solid #A08A6F;
+    border: 1px solid var(--color-accent);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    /* Smooth scaling via CSS, position via GSAP */
-    transition: width 0.3s, height 0.3s, background-color 0.3s, transform 0s;
+    mix-blend-mode: difference;
+    transition: width 0.3s, height 0.3s, background-color 0.3s;
 }
 
 .cursor-inner {
@@ -45,7 +98,7 @@ body {
     left: 0;
     width: 6px;
     height: 6px;
-    background-color: #A08A6F;
+    background-color: var(--color-accent);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;

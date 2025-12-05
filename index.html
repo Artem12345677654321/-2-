@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLATO RUG | MODULAR JS</title>
+    <title>PLATO RUG | IMPERIAL</title>
     <link rel="stylesheet" href="src/styles/base.css">
     
     <!-- Globals from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls for Three.js r128 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script type="importmap">
 {
   "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
     "react": "https://aistudiocdn.com/react@^19.2.1",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
     "three": "https://aistudiocdn.com/three@^0.181.2",
     "gsap": "https://aistudiocdn.com/gsap@^3.13.0"
   }
@@ -23,9 +27,34 @@
 </head>
 <body>
     <canvas id="webgl-canvas"></canvas>
+    
     <div id="content">
-        <!-- Interactive Target Test -->
-        <h1 class="interactive-target" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: 'Times New Roman', serif; font-size: 3rem; pointer-events: auto;">PLATO RUG</h1>
+        <!-- Hero Section -->
+        <section class="section">
+            <div class="text-container">
+                <p class="subtitle">Imperial Style</p>
+                <h1>PLATO RUG</h1>
+            </div>
+        </section>
+
+        <!-- Collection Section -->
+        <section class="section">
+             <div class="text-container">
+                <p class="subtitle">The Collection</p>
+                <h2>Timeless Weaving</h2>
+                <p class="description">
+                    Each knot is a testament to patience. Our artisans dedicate months to a single piece.
+                </p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section">
+             <div class="text-container">
+                <p class="subtitle">Atelier</p>
+                <h2>Contact Us</h2>
+            </div>
+        </section>
     </div>
     
     <script type="module" src="src/app.js"></script>
