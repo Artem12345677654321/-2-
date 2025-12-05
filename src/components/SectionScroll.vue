@@ -10,38 +10,38 @@ const contentRef = ref<HTMLElement | null>(null);
 const imageRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-  if (!sectionRef.value || !contentRef.value || !imageRef.value) return;
+  if (!sectionRef.value || !contentRef.value) return;
 
-  // 1. Text Entry Animation
-  gsap.fromTo(contentRef.value,
-    { y: 100, opacity: 0 },
-    {
-      y: 0,
-      opacity: 1,
-      duration: 1.5,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: sectionRef.value,
-        start: "top 75%", // When top of section hits 75% of viewport
-        toggleActions: "play none none reverse"
-      }
+  // 1. Main Content Animation (Slide Up)
+  // Logic: When top of target hits 85% of viewport height, animate from y:100/opacity:0
+  gsap.from(contentRef.value, {
+    y: 100,
+    opacity: 0,
+    duration: 1.5,
+    ease: "power3.out",
+    scrollTrigger: {
+      trigger: sectionRef.value, // Trigger based on the section container
+      start: "top 85%", 
+      toggleActions: "play none none none" // Play once
     }
-  );
+  });
 
-  // 2. Parallax Image Effect
-  gsap.fromTo(imageRef.value,
-    { y: -50 }, // Start slightly up
-    {
-      y: 50,    // Move down as we scroll
-      ease: "none",
-      scrollTrigger: {
-        trigger: sectionRef.value,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: true // Link animation to scroll bar
-      }
-    }
-  );
+  // 2. Parallax Image Effect (Optional enhancement kept for aesthetics)
+  if (imageRef.value) {
+      gsap.fromTo(imageRef.value,
+        { y: -50 },
+        {
+          y: 50,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.value,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true
+          }
+        }
+      );
+  }
 });
 </script>
 
@@ -49,7 +49,7 @@ onMounted(() => {
   <section ref="sectionRef" class="relative w-full py-32 px-6 md:px-20 overflow-hidden min-h-screen flex items-center justify-center">
     
     <!-- Background Parallax Image -->
-    <div class="absolute inset-0 z-0 opacity-20">
+    <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
       <div ref="imageRef" class="w-full h-[120%] bg-[url('https://images.unsplash.com/photo-1600166898405-da9535204843?q=80&w=2560&auto=format&fit=crop')] bg-cover bg-center -mt-10"></div>
     </div>
     

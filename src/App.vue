@@ -11,28 +11,27 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 onMounted(() => {
-    // Optional: Global soft scroll setup could go here if using a library like Lenis.
-    // For now, we rely on CSS smooth-scroll and GSAP triggers.
+    // App mounted
 });
 </script>
 
 <template>
-  <div class="relative w-full min-h-screen text-[#F0F0F0] selection:bg-[#A08A6F] selection:text-white">
-    <!-- 1. Immersive WebGL Background -->
+  <div class="relative w-full min-h-screen text-[#F0F0F0] selection:bg-[#A08A6F] selection:text-white overflow-x-hidden">
+    <!-- 1. Immersive WebGL Background (Z-0) -->
     <WebGlBackground />
 
-    <!-- 2. Custom UX Cursor -->
+    <!-- 2. Custom UX Cursor (Z-Top) -->
     <CustomCursor />
 
-    <!-- 3. Main Content Layer -->
-    <main class="relative z-10 w-full flex flex-col items-center overflow-hidden">
+    <!-- 3. Main Content Layer (Z-10) -->
+    <main class="relative z-10 w-full flex flex-col items-center">
       
       <!-- Navigation -->
-      <nav class="fixed top-0 left-0 w-full p-8 flex justify-between items-center z-50 mix-blend-difference">
-        <div class="text-xl font-serif tracking-widest text-[#A08A6F] interactive-target cursor-pointer hover:opacity-80 transition-opacity">
+      <nav class="fixed top-0 left-0 w-full p-8 flex justify-between items-center z-50 mix-blend-difference pointer-events-none">
+        <div class="text-xl font-serif tracking-widest text-[#A08A6F] interactive-target cursor-pointer pointer-events-auto">
           PLATO
         </div>
-        <div class="hidden md:flex gap-10 text-xs uppercase tracking-widest text-white/80">
+        <div class="hidden md:flex gap-10 text-xs uppercase tracking-widest text-white/80 pointer-events-auto">
           <button 
             v-for="item in ['Collection', 'Atelier', 'About', 'Contact']" 
             :key="item" 
@@ -41,7 +40,7 @@ onMounted(() => {
             {{ item }}
           </button>
         </div>
-        <button class="text-xs border border-white/20 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300 interactive-target uppercase tracking-widest">
+        <button class="text-xs border border-white/20 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300 interactive-target uppercase tracking-widest pointer-events-auto">
           Menu
         </button>
       </nav>
@@ -83,7 +82,7 @@ onMounted(() => {
       </section>
 
       <!-- 3D Product Showcase Section -->
-      <section class="w-full max-w-7xl mx-auto px-6 py-24">
+      <section class="w-full max-w-7xl mx-auto px-6 py-24 relative z-20">
         <div class="mb-12 flex flex-col md:flex-row justify-between items-end border-b border-white/10 pb-8">
             <div>
                 <span class="text-[#A08A6F] text-xs uppercase tracking-widest mb-2 block">Featured Masterpiece</span>
