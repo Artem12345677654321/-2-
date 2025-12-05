@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLATO RUG | FINAL FIX</title>
+    <title>PLATO RUG | MODULAR JS</title>
+    <link rel="stylesheet" href="src/styles/base.css">
     
-    <style>
-        body { margin: 0; overflow: hidden; background-color: #000; }
-        #webgl-canvas { display: block; }
-    </style>
-    
+    <!-- Globals from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script type="importmap">
@@ -26,57 +23,11 @@
 </head>
 <body>
     <canvas id="webgl-canvas"></canvas>
+    <div id="content">
+        <!-- Interactive Target Test -->
+        <h1 class="interactive-target" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: 'Times New Roman', serif; font-size: 3rem; pointer-events: auto;">PLATO RUG</h1>
+    </div>
     
-    <script>
-        // === ЛОГИКА ТЕСТОВОГО КРАСНОГО КУБА ===
-        
-        const canvas = document.getElementById('webgl-canvas');
-        if (!canvas) {
-            console.error("КРИТИЧЕСКАЯ ОШИБКА: Холст не найден!");
-            document.body.innerHTML = '<h1>❌ Canvas не найден. Сбой HTML.</h1>';
-        }
-
-        // 1. Инициализация Сцены, Камеры, Рендерера
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas });
-
-        // Установка размера рендерера
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        // 2. Тестовый Объект (КРАСНЫЙ КУБ)
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({ color: 0xFF0000 }); // Красный цвет
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-
-        // Позиция камеры
-        camera.position.z = 5;
-
-        // 3. Цикл Рендеринга
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Вращение для проверки, что цикл запущен
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-
-            renderer.render(scene, camera);
-        };
-        
-        // Запуск анимации
-        animate();
-        
-        // Обработка изменения размера окна
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Тест GSAP (для проверки, что библиотека загружена)
-        console.log("GSAP загружен:", gsap);
-        
-    </script>
+    <script type="module" src="src/app.js"></script>
 </body>
 </html>
