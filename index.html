@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLATO RUG | Cinematic Experience</title>
+    <title>PLATO RUG | Digital Veil</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,6 @@
             --color-bg: #050505;
             --color-text: #e0e0e0;
             --color-gold: #D4AF37;
-            --color-dim: #444;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,29 +28,36 @@
             cursor: none;
         }
 
-        /* === CUSTOM CURSOR === */
-        .cursor-dot {
+        /* === 3D Canvas (Rug) - Z-Index: 1 === */
+        #webgl-canvas {
             position: fixed;
             top: 0; left: 0;
-            width: 6px; height: 6px;
-            background-color: var(--color-gold);
-            border-radius: 50%;
-            z-index: 10000;
-            pointer-events: none;
-            mix-blend-mode: difference;
-        }
-        .cursor-circle {
-            position: fixed;
-            top: 0; left: 0;
-            width: 40px; height: 40px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 50%;
-            z-index: 10000;
-            pointer-events: none;
-            transition: transform 0.1s;
+            width: 100%; height: 100%;
+            z-index: 1;
         }
 
-        /* === ADVANCED PRELOADER (THE LOOM) === */
+        /* === Digital Veil Canvas (Shader Mask) - Z-Index: 10 === */
+        /* Этот Canvas всегда покрывает сцену, и через него "прорезается" дыра */
+        #veil-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 10; 
+            pointer-events: none; /* Пропускаем клики */
+        }
+
+        /* === UI Layer - Z-Index: 11 === */
+        #ui-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 11; 
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        /* === PRELOADER (Digital Loom) - Z-Index: 5000+ === */
         #loader-container {
             position: fixed;
             top: 0; left: 0;
@@ -61,24 +67,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            flex-direction: column;
         }
 
-        /* Канвас для генеративного шума и частиц */
-        #loader-canvas {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            opacity: 0.4;
-        }
-
-        .loader-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            mix-blend-mode: lighten;
-        }
-
+        /* (Сохраняем стили лоадера из V3 для консистентности) */
         .loader-title {
             font-family: 'Syncopate', sans-serif;
             font-weight: 700;
@@ -90,7 +82,6 @@
             position: relative;
             overflow: hidden;
         }
-        
         .loader-title::after {
             content: attr(data-text);
             position: absolute;
@@ -101,9 +92,7 @@
             -webkit-text-stroke: 0px;
             overflow: hidden;
             white-space: nowrap;
-            transition: width 0s; /* Управляется JS */
         }
-
         .loader-status {
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
@@ -115,7 +104,6 @@
             justify-content: center;
             gap: 20px;
         }
-
         .tech-data {
             font-family: 'Courier New', monospace;
             font-size: 0.7rem;
@@ -124,100 +112,50 @@
             text-transform: uppercase;
         }
 
-        /* Шторки для перехода */
-        .curtain {
-            position: absolute;
-            top: 0;
-            width: 51%; /* Чуть больше половины для перекрытия */
-            height: 100%;
-            background: #050505;
-            z-index: 4000;
-            transform: scaleX(1);
-            transform-origin: center;
+        /* === CURSOR === */
+        .cursor-dot {
+            position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+            background-color: var(--color-gold); border-radius: 50%;
+            z-index: 10000; pointer-events: none; mix-blend-mode: difference;
         }
-        .curtain-left { left: 0; transform-origin: left; }
-        .curtain-right { right: 0; transform-origin: right; }
-
-        /* === MAIN SITE UI === */
-        #webgl-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
+        .cursor-circle {
+            position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 50%;
+            z-index: 10000; pointer-events: none; transition: transform 0.1s;
         }
 
-        #ui-layer {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0;
-        }
-
-        /* Навигация и контент - стиль Luxury */
+        /* === UI STYLES === */
         nav {
-            position: absolute;
-            top: 50px;
-            width: 100%;
-            padding: 0 80px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            position: absolute; top: 50px; width: 100%; padding: 0 80px;
+            display: flex; justify-content: space-between; align-items: flex-start;
         }
-
         .logo-mark {
-            font-family: 'Syncopate', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 0.2em;
-            color: #fff;
+            font-family: 'Syncopate', sans-serif; font-weight: 700;
+            font-size: 1.2rem; letter-spacing: 0.2em; color: #fff;
         }
-
         .nav-links span {
-            display: block;
-            text-align: right;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            margin-bottom: 8px;
-            color: rgba(255,255,255,0.6);
-            cursor: none;
-            pointer-events: auto;
-            transition: color 0.3s;
+            font-family: 'Montserrat', sans-serif; font-size: 0.8rem;
+            letter-spacing: 0.1em; margin-bottom: 8px; 
+            color: rgba(255,255,255,0.6); cursor: none;
+            pointer-events: auto; transition: color 0.3s;
         }
         .nav-links span:hover { color: var(--color-gold); }
-
         .hero-content {
-            position: absolute;
-            bottom: 80px;
-            left: 80px;
-            max-width: 600px;
+            position: absolute; bottom: 80px; left: 80px; max-width: 600px;
         }
-
         h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 6vw;
-            line-height: 0.9;
-            color: #fff;
-            margin-bottom: 20px;
+            font-family: 'Cormorant Garamond', serif; font-size: 6vw;
+            line-height: 0.9; color: #fff; margin-bottom: 20px;
         }
-        
         h1 i {
-            font-family: 'Cormorant Garamond', serif;
-            font-weight: 300;
+            font-family: 'Cormorant Garamond', serif; font-weight: 300;
             color: var(--color-gold);
         }
-
         .hero-desc {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: rgba(255,255,255,0.7);
-            border-left: 1px solid var(--color-gold);
-            padding-left: 20px;
+            font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,0.7);
+            border-left: 1px solid var(--color-gold); padding-left: 20px;
             margin-top: 30px;
         }
-
     </style>
 <script type="importmap">
 {
@@ -237,23 +175,9 @@
     <div class="cursor-dot"></div>
     <div class="cursor-circle"></div>
 
-    <div id="loader-container">
-        <canvas id="loader-canvas"></canvas>
-        <div class="loader-content">
-            <div class="loader-title" data-text="PLATO">PLATO</div>
-            <div class="loader-status">
-                <span id="loader-phase">INITIALIZING LOOM</span>
-            </div>
-            <div class="tech-data">
-                <span id="kpsi-counter">0000</span> KNOTS / SQ.INCH
-            </div>
-        </div>
-    </div>
-
-    <div class="curtain curtain-left"></div>
-    <div class="curtain curtain-right"></div>
-
     <canvas id="webgl-canvas"></canvas>
+
+    <canvas id="veil-canvas"></canvas>
 
     <div id="ui-layer">
         <nav>
@@ -272,113 +196,65 @@
             </p>
         </div>
     </div>
+    
+    <div id="loader-container">
+        <div class="loader-content">
+            <div class="loader-title" data-text="PLATO">PLATO</div>
+            <div class="loader-status">
+                <span id="loader-phase">INITIALIZING LOOM</span>
+            </div>
+            <div class="tech-data">
+                <span id="kpsi-counter">0000</span> KNOTS / SQ.INCH
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <script>
         // ==========================================
-        // 1. ADVANCED LOADER ANIMATION (CANVAS 2D)
-        // ==========================================
-        const loaderCanvas = document.getElementById('loader-canvas');
-        const lCtx = loaderCanvas.getContext('2d');
-        let lWidth, lHeight;
-        
-        const particles = [];
-        const lines = [];
-
-        function initLoader() {
-            lWidth = loaderCanvas.width = window.innerWidth;
-            lHeight = loaderCanvas.height = window.innerHeight;
-
-            // Создаем "нити" (вертикальные линии)
-            for(let i=0; i<30; i++) {
-                lines.push({
-                    x: Math.random() * lWidth,
-                    speed: 0.5 + Math.random() * 2,
-                    opacity: 0.1 + Math.random() * 0.3,
-                    height: 0
-                });
-            }
-        }
-
-        function animateLoaderCanvas() {
-            // Эффект "шлейфа" для кинематографичности
-            lCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            lCtx.fillRect(0, 0, lWidth, lHeight);
-
-            // Отрисовка нитей (Matrix style но более элегантно)
-            lCtx.strokeStyle = '#D4AF37';
-            lines.forEach(line => {
-                lCtx.beginPath();
-                lCtx.globalAlpha = line.opacity;
-                lCtx.moveTo(line.x, 0);
-                lCtx.lineTo(line.x, line.height);
-                lCtx.stroke();
-                
-                line.height += line.speed * 5;
-                if(line.height > lHeight) {
-                    line.height = 0;
-                    line.x = Math.random() * lWidth;
-                }
-            });
-            
-            // Добавляем шум (Grain)
-            for(let i=0; i<100; i++) {
-                lCtx.fillStyle = Math.random() > 0.5 ? '#fff' : '#D4AF37';
-                lCtx.globalAlpha = Math.random() * 0.5;
-                lCtx.fillRect(Math.random()*lWidth, Math.random()*lHeight, 1, 1);
-            }
-
-            requestAnimationFrame(animateLoaderCanvas);
-        }
-
-        initLoader();
-        const loaderAnimFrame = requestAnimationFrame(animateLoaderCanvas);
-
-        // ==========================================
-        // 2. CURSOR LOGIC
+        // 1. GLOBAL SETUP AND CURSOR
         // ==========================================
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorCircle = document.querySelector('.cursor-circle');
+        let mouse = new THREE.Vector2(0.5, 0.5); // Normalized mouse position (0 to 1)
 
         window.addEventListener('mousemove', (e) => {
+            // Update cursor DOM elements
             gsap.to(cursorDot, { x: e.clientX - 3, y: e.clientY - 3, duration: 0.1 });
             gsap.to(cursorCircle, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.4 });
+            
+            // Update normalized mouse position for the shader (Y is inverted in WebGL from top-left DOM)
+            mouse.x = e.clientX / window.innerWidth;
+            mouse.y = 1.0 - (e.clientY / window.innerHeight); 
         });
 
+
         // ==========================================
-        // 3. THREE.JS SCENE (PROCEDURAL RUG)
+        // 2. RUG SCENE (WEBGL 1 - BACKGROUND)
         // ==========================================
-        const canvas = document.getElementById('webgl-canvas');
-        const scene = new THREE.Scene();
-        // scene.fog = new THREE.FogExp2(0x050505, 0.03); // Убрали туман для чистоты картинки при зуме
+        const rugCanvas = document.getElementById('webgl-canvas');
+        const rScene = new THREE.Scene();
+        const rCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        rCamera.position.set(0, 30, 0); 
+        rCamera.lookAt(0, 0, 0);
 
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        
-        // Начальная позиция камеры (очень далеко для эффекта зума)
-        camera.position.set(0, 30, 0); 
-        camera.lookAt(0, 0, 0);
+        const rRenderer = new THREE.WebGLRenderer({ canvas: rugCanvas, antialias: true, alpha: true });
+        rRenderer.setSize(window.innerWidth, window.innerHeight);
+        rRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        rRenderer.shadowMap.enabled = true;
+        rRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        rRenderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-
-        // --- RUG GENERATION (Optimized) ---
+        // --- Rug Generation (Procedural) ---
         function createRugTexture() {
             const size = 1024;
             const ctx = document.createElement('canvas').getContext('2d');
             ctx.canvas.width = size;
             ctx.canvas.height = size;
-
-            // База
-            ctx.fillStyle = '#6e6e6e'; 
-            ctx.fillRect(0, 0, size, size);
+            ctx.fillStyle = '#6e6e6e'; ctx.fillRect(0, 0, size, size);
             
-            // Шум ворса
             for (let i = 0; i < 60000; i++) {
                 const x = Math.random() * size;
                 const y = Math.random() * size;
@@ -386,22 +262,6 @@
                 ctx.fillStyle = `rgba(${grey},${grey},${grey}, 0.15)`;
                 ctx.fillRect(x, y, 2, 2);
             }
-
-            // Геометрический арт-узор
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.lineWidth = 15;
-            ctx.beginPath();
-            ctx.arc(size/2, size/2, size/2.5, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            // Золотая нить (акцент)
-            ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(0, size/2);
-            ctx.bezierCurveTo(size/3, size/3, size/1.5, size/1.5, size, size/2);
-            ctx.stroke();
-
             const texture = new THREE.CanvasTexture(ctx.canvas);
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
@@ -410,144 +270,237 @@
         }
 
         const rugTexture = createRugTexture();
-        const geometry = new THREE.PlaneGeometry(5, 7, 200, 200); // Портретная ориентация ковра
-        
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            map: rugTexture,
-            displacementMap: rugTexture,
-            displacementScale: 0.2,
-            roughness: 0.8,
-            roughnessMap: rugTexture,
-            normalMap: rugTexture,
+        const rGeometry = new THREE.PlaneGeometry(5, 7, 200, 200);
+        const rMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff, map: rugTexture, displacementMap: rugTexture,
+            displacementScale: 0.2, roughness: 0.8, normalMap: rugTexture,
             normalScale: new THREE.Vector2(1, 1)
         });
 
-        const rug = new THREE.Mesh(geometry, material);
+        const rug = new THREE.Mesh(rGeometry, rMaterial);
         rug.rotation.x = -Math.PI / 2;
         rug.receiveShadow = true;
         rug.castShadow = true;
-        scene.add(rug);
+        rScene.add(rug);
 
-        // --- LIGHTING ---
-        const ambLight = new THREE.AmbientLight(0xffffff, 0.2);
-        scene.add(ambLight);
-
+        // --- Lighting ---
+        rScene.add(new THREE.AmbientLight(0xffffff, 0.2));
         const spotLight = new THREE.SpotLight(0xffeeb1, 2.5);
         spotLight.position.set(5, 12, 5);
         spotLight.castShadow = true;
         spotLight.shadow.mapSize.width = 2048;
         spotLight.shadow.mapSize.height = 2048;
         spotLight.shadow.bias = -0.0001;
-        scene.add(spotLight);
+        rScene.add(spotLight);
 
-        const rimLight = new THREE.DirectionalLight(0x4444ff, 0.8);
-        rimLight.position.set(-5, 1, -5);
-        scene.add(rimLight);
-
-        // --- LOOP ---
+        // --- Loop ---
         const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
+        function animateRugScene() {
+            requestAnimationFrame(animateRugScene);
             const t = clock.getElapsedTime();
-            // Едва заметное дыхание ковра
-            rug.position.y = Math.sin(t * 0.3) * 0.02;
-            renderer.render(scene, camera);
+            rug.position.y = Math.sin(t * 0.3) * 0.02; // Breathing effect
+            rRenderer.render(rScene, rCamera);
         }
-        animate();
+        animateRugScene();
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            lWidth = loaderCanvas.width = window.innerWidth;
-            lHeight = loaderCanvas.height = window.innerHeight;
+        // ==========================================
+        // 3. DIGITAL VEIL (WEBGL 2 - MASKING LAYER)
+        // ==========================================
+        const veilCanvas = document.getElementById('veil-canvas');
+        const vScene = new THREE.Scene();
+        const vCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+        vCamera.position.z = 1;
+        
+        const vRenderer = new THREE.WebGLRenderer({ canvas: veilCanvas, antialias: true, alpha: true });
+        vRenderer.setSize(window.innerWidth, window.innerHeight);
+        vRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // --- GLSL SHADERS (The Core of the Effect) ---
+        
+        const vertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+        `;
+
+        const fragmentShader = `
+            uniform vec2 u_mouse;
+            uniform float u_time;
+            uniform float u_reveal_radius;
+            uniform vec2 u_flash_pos;
+            uniform float u_flash_radius;
+            
+            varying vec2 vUv;
+            
+            void main() {
+                // 1. Mouse Reveal Mask
+                float dist_mouse = distance(vUv, u_mouse);
+                // softstep(edge0, edge1, x): Returns 0.0 if x is less than edge0, 1.0 if x is greater than edge1, and smoothly interpolates between edge0 and edge1.
+                // Since vUv is 0-1, we use a small normalized radius. 0.1 = 10% of screen.
+                float mouse_mask = smoothstep(u_reveal_radius, u_reveal_radius + 0.1, dist_mouse); 
+
+                // 2. Random Flash Mask (u_flash_radius is animated from 0 to large and back)
+                float dist_flash = distance(vUv, u_flash_pos);
+                // Flash is transparent inside its radius, opaque outside.
+                float flash_mask = smoothstep(u_flash_radius, u_flash_radius - 0.05, dist_flash);
+
+                // 3. Combine Masks: max() means if EITHER mask reveals, the veil is removed.
+                float total_mask = max(mouse_mask, 1.0 - flash_mask);
+
+                // Final veil color (Black with opacity controlled by the mask)
+                // total_mask=1.0 means full veil (black). total_mask=0.0 means full transparency.
+                gl_FragColor = vec4(vec3(0.0), total_mask);
+            }
+        `;
+
+        const veilUniforms = {
+            u_mouse: { value: mouse },
+            u_time: { value: 0.0 },
+            u_reveal_radius: { value: 0.12 }, // Base radius of the mouse effect
+            u_flash_pos: { value: new THREE.Vector2(0.5, 0.5) },
+            u_flash_radius: { value: 0.0 } // Animated radius of the flash
+        };
+
+        const veilMaterial = new THREE.ShaderMaterial({
+            uniforms: veilUniforms,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            transparent: true,
+            depthWrite: false
         });
 
+        const plane = new THREE.PlaneGeometry(2, 2);
+        const veilMesh = new THREE.Mesh(plane, veilMaterial);
+        vScene.add(veilMesh);
+
+        // --- Loop for Veil ---
+        function animateVeilScene() {
+            requestAnimationFrame(animateVeilScene);
+            veilUniforms.u_time.value += 0.01;
+            veilUniforms.u_mouse.value = mouse;
+            vRenderer.render(vScene, vCamera);
+        }
+        animateVeilScene();
+
         // ==========================================
-        // 4. THE CINEMATIC SEQUENCE (GSAP)
+        // 4. RANDOM FLASH MECHANISM (P-39)
+        // ==========================================
+
+        function triggerRandomFlash() {
+            // Random position for the flash (normalized 0-1)
+            const randomX = Math.random() * 0.6 + 0.2; // Keep away from edges
+            const randomY = Math.random() * 0.6 + 0.2;
+            
+            // Set the flash starting point
+            veilUniforms.u_flash_pos.value.set(randomX, randomY);
+            veilUniforms.u_flash_radius.value = 0.0;
+            
+            // GSAP Timeline for the flash effect
+            gsap.timeline({
+                // After the flash ends, schedule the next one
+                onComplete: scheduleNextFlash
+            })
+            // Flash out
+            .to(veilUniforms.u_flash_radius, {
+                value: 0.6, // Large radius for the flash
+                duration: 0.8,
+                ease: "power2.out"
+            })
+            // Flash in (Hides the revealed area again)
+            .to(veilUniforms.u_flash_radius, {
+                value: 0.0,
+                duration: 0.8,
+                ease: "power2.in"
+            }, 0.2); // Start retraction slightly delayed
+
+        }
+        
+        // Random interval between 5 and 15 seconds
+        function scheduleNextFlash() {
+            const delay = Math.random() * 10 + 5; 
+            gsap.delayedCall(delay, triggerRandomFlash);
+        }
+
+        // ==========================================
+        // 5. GSAP LOADER & TRANSITION SEQUENCE
         // ==========================================
         
-        // 1. Симуляция загрузки (Counter)
         let progress = { value: 0 };
         const kpsiEl = document.getElementById('kpsi-counter');
-        const titleAfter = document.querySelector('.loader-title');
         const statusEl = document.getElementById('loader-phase');
 
         const tl = gsap.timeline();
 
+        // --- Part 1: Digital Loom (Loading) ---
         tl.to(progress, {
             value: 100,
-            duration: 4,
+            duration: 3.0,
             ease: "power2.inOut",
             onUpdate: function() {
-                // Обновляем текст заголовка (эффект заливки золотом)
-                document.querySelector('.loader-title').style.setProperty('--p', this.progress() * 100 + '%');
                 document.querySelector('.loader-title::after').style.width = (this.progress() * 100) + '%';
-                
-                // Обновляем счетчик узлов
-                let knots = Math.floor(progress.value * 18); // 0 -> 1800
+                let knots = Math.floor(progress.value * 18);
                 kpsiEl.textContent = knots.toString().padStart(4, '0');
-
-                // Меняем статус текст
                 if (progress.value > 30 && progress.value < 60) statusEl.textContent = "WEAVING GEOMETRY";
                 if (progress.value > 60 && progress.value < 90) statusEl.textContent = "APPLYING TEXTURES";
                 if (progress.value > 90) statusEl.textContent = "FINALIZING MASTERPIECE";
             }
         })
         
-        // 2. Исчезновение текста загрузчика
-        .to(".loader-content", {
-            opacity: 0,
-            scale: 1.1,
-            duration: 0.5,
-            ease: "power2.in"
-        })
+        // --- Part 2: Transition to Veil (Instant) ---
+        // 1. Hide the Loom UI
+        .to("#loader-container", { autoAlpha: 0, duration: 0.5 }, "+=0.3") 
         
-        // 3. Открытие "Штор" (Curtain Reveal)
-        .to(".curtain-left", { x: "-100%", duration: 1.5, ease: "power4.inOut" }, "reveal")
-        .to(".curtain-right", { x: "100%", duration: 1.5, ease: "power4.inOut" }, "reveal")
-        
-        // 4. Скрытие фона лоадера
-        .to("#loader-container", { autoAlpha: 0, duration: 0.1 }, "-=1.0")
-        
-        // 5. Драматичный влет камеры (Camera Drop)
-        .fromTo(camera.position, 
+        // 2. Camera drops into place (happens *behind* the veil)
+        .fromTo(rCamera.position, 
             { y: 40, z: 0, x: 0 },
-            { y: 6, z: 3, x: 0, duration: 2.5, ease: "expo.out" }, 
-            "reveal+=0.2" // Начинаем чуть позже открытия штор
+            { y: 6, z: 3, x: 0, duration: 2.0, ease: "expo.out" }, 
+            "<" 
         )
-        .fromTo(camera.rotation,
-            { x: -Math.PI/2 }, // Смотрит строго вниз
-            { x: -0.8, duration: 2.5, ease: "expo.out" },
-            "reveal+=0.2"
+        .fromTo(rCamera.rotation,
+            { x: -Math.PI/2 }, 
+            { x: -0.8, duration: 2.0, ease: "expo.out" },
+            "<"
         )
-
-        // 6. Появление UI
-        .to("#ui-layer", { opacity: 1, duration: 1 }, "-=1.0")
+        
+        // 3. Make the UI visible
+        .to("#ui-layer", { opacity: 1, duration: 1.0 }, "-=1.0")
+        
+        // 4. Stagger UI Text appearance
         .from("h1", { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.5")
         .from(".hero-desc", { x: -20, opacity: 0, duration: 1 }, "-=0.8")
-        .from(".nav-links span", { y: -20, opacity: 0, stagger: 0.1 }, "-=1.0");
+        .from(".nav-links span", { y: -20, opacity: 0, stagger: 0.1 }, "-=1.0")
 
-        // --- INTERACTIVE PARALLAX ---
+        // 5. Start the random flash cycle only after the main animation is done
+        .call(scheduleNextFlash);
+
+
+        // --- RESIZE HANDLER ---
+        window.addEventListener('resize', () => {
+            // Rug Scene Resize
+            rCamera.aspect = window.innerWidth / window.innerHeight;
+            rCamera.updateProjectionMatrix();
+            rRenderer.setSize(window.innerWidth, window.innerHeight);
+            // Veil Scene Resize
+            vRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // --- RUG PARALLAX (Active only after the main intro) ---
         document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth - 0.5) * 2;
             const y = (e.clientY / window.innerHeight - 0.5) * 2;
             
-            // Только если загрузка завершена
             if (!tl.isActive()) {
-                gsap.to(camera.position, {
+                // Subtle camera/rug movement for depth
+                gsap.to(rCamera.position, {
                     x: x * 0.5,
                     y: 6 + y * 0.5,
                     duration: 1
                 });
-                gsap.to(rug.rotation, {
-                    z: x * 0.05,
-                    duration: 1
-                });
+                rCamera.lookAt(0, rug.position.y, 0); // Always look at the rug
             }
         });
-
     </script>
 </body>
 </html>
