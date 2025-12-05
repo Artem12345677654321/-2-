@@ -1,0 +1,38 @@
+:root {
+  --color-background: #000;
+  --color-text: #F0F0F0; /* Soft White */
+  --color-accent: #A08A6F; /* Golden-Bronze Accent */
+  --font-family-serif: 'Playfair Display', serif; /* Using Playfair as PSTimes placeholder */
+  --font-family-sans: 'Inter', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-sans);
+  cursor: none; /* Hide default cursor */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-serif);
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Utility for interactive targets */
+.interactive-target {
+  cursor: none; /* Ensure system cursor is hidden */
+}

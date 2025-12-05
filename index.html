@@ -8,40 +8,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background-color: #050505; /* Deep black/blue tone */
-        color: #ffffff;
-        cursor: none; /* Hide default cursor */
-        overflow-x: hidden;
-      }
-      
-      /* Smooth scrolling */
-      html {
-        scroll-behavior: smooth;
-      }
-
-      /* Custom selection color */
-      ::selection {
-        background: #8A725A;
-        color: #fff;
-      }
-    </style>
-  <script type="importmap">
+    <script type="importmap">
 {
   "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
-    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "vue": "https://aistudiocdn.com/vue@3.3.4/dist/vue.esm-browser.js",
     "three": "https://aistudiocdn.com/three@^0.181.2",
-    "gsap": "https://aistudiocdn.com/gsap@^3.13.0"
+    "gsap": "https://aistudiocdn.com/gsap@^3.13.0",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/"
   }
 }
 </script>
-</head>
+  </head>
   <body>
-    <div id="root"></div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
