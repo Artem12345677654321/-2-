@@ -31,9 +31,8 @@ export const App: React.FC = () => {
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
 
-    // --- MAIN ANIMATION SEQUENCE ---
+    // --- MAIN ANIMATION SEQUENCE (Handles Loader & UI) ---
     useEffect(() => {
-        // Elements must be present
         const loaderContainer = loaderContainerRef.current;
         const uiLayer = uiLayerRef.current;
         
@@ -45,11 +44,10 @@ export const App: React.FC = () => {
             paused: true,
             onComplete: () => {
                 setIsLoaded(true); // Enable interactivity
-                gsap.set(loaderContainer, { display: 'none' }); // Remove loader from flow
             }
         });
 
-        // 1. Digital Loom Animation
+        // 1. Digital Loom Animation (3.0s duration)
         tl.to(progress, {
             value: 100,
             duration: 3.0,
@@ -73,29 +71,13 @@ export const App: React.FC = () => {
             }
         });
         
-        // 2. Transition to Veil
-        tl.to(loaderContainer, { opacity: 0, duration: 0.5 }, "+=0.3");
+        // 2. Transition Fade (0.5s duration)
+        tl.to(loaderContainer, { opacity: 0, duration: 0.5 }, "+=0.3"); // Starts at 3.3s
 
-        // 3. Camera Drop
-        // We defer the camera animation definition slightly or check ref to ensure RugScene has mounted and assigned the ref.
-        // RugScene renders synchronously, so cameraRef.current should be populated by the time this effect runs.
-        if (cameraRef.current) {
-            tl.to(cameraRef.current.position, 
-                { y: 6, z: 3, x: 0, duration: 2.0, ease: "expo.out" }, 
-                "<" 
-            )
-            .to(cameraRef.current.rotation,
-                { x: -0.8, duration: 2.0, ease: "expo.out" },
-                "<"
-            );
-        } else {
-            console.warn("PLATO RUG: Camera ref was null during animation initialization.");
-        }
-
-        // 4. UI Fade In
+        // 3. UI Fade In (1.0s duration)
         tl.to(uiLayer, { opacity: 1, duration: 1.0 }, "-=1.0");
         
-        // Note: We use standard CSS selectors for these sub-elements as they are static inside the UI layer
+        // 4. Stagger UI Text appearance
         tl.from("h1", { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.5")
           .from(".hero-desc", { x: -20, opacity: 0, duration: 1 }, "-=0.8");
 
@@ -103,8 +85,35 @@ export const App: React.FC = () => {
 
         return () => {
             tl.kill();
+            gsap.set(loaderContainer, { display: 'none' });
         };
     }, []); // Run once on mount
+
+    // --- EFFECT: CAMERA DROP SEQUENCE (Runs when cameraRef is ready) ---
+    useEffect(() => {
+        const camera = cameraRef.current;
+        // CRITICAL CHECK: Wait until camera is initialized by RugScene
+        if (!camera) return; 
+
+        // Start animation with delay to sync with loader (3.3s)
+        gsap.timeline({ 
+            delay: 3.3, 
+            onComplete: () => {
+                 if (loaderContainerRef.current) {
+                     gsap.set(loaderContainerRef.current, { display: 'none' });
+                 }
+            }
+        })
+        .to(camera.position, 
+            { y: 6, z: 3, x: 0, duration: 2.0, ease: "expo.out" }, 
+            0 
+        )
+        .to(camera.rotation,
+            { x: -0.8, duration: 2.0, ease: "expo.out" },
+            0 
+        );
+
+    }, [cameraRef.current]);
 
     return (
         <>
