@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLATO RUG | Премиум-Прототип</title>
+    <title>PLATO RUG | IMPERIAL</title>
     
     <style>
         /* Базовый сброс и переменные */
-        body { margin: 0; overflow-x: hidden; background-color: #000; color: #E0E0E0; cursor: none; font-family: 'Times New Roman', serif; }
+        body { margin: 0; overflow-x: hidden; background-color: #050505; color: #E0E0E0; cursor: none; font-family: 'Times New Roman', serif; }
         :root {
-            --color-background: #000000;
+            --color-background: #050505;
             --color-text: #E0E0E0;
             --color-accent: #A08A6F; /* Золотисто-бронзовый */
             --font-family-serif: 'Times New Roman', serif;
@@ -27,9 +27,9 @@
         /* HTML Контент */
         #content {
             position: relative;
-            z-index: 10; /* Контент всегда над 3D-фоном */
-            min-height: 300vh; /* Высота для тестирования ScrollTrigger */
+            z-index: 10;
         }
+        
         .section {
             height: 100vh;
             display: flex;
@@ -37,18 +37,58 @@
             justify-content: center;
             align-items: center;
             font-family: var(--font-family-serif);
-            font-size: 3em;
             text-align: center;
             padding: 0 10%;
-            pointer-events: none; /* Let clicks pass through to canvas generally */
+            pointer-events: none; /* Пропускаем клики к 3D сцене */
+            box-sizing: border-box;
         }
+        
         .section > * {
-            pointer-events: auto; /* Re-enable pointer events for text */
+            pointer-events: auto; /* Включаем интерактивность для текста */
         }
-        .section h1 { color: var(--color-accent); margin-bottom: 0.2em; font-weight: normal; }
-        .section p { font-size: 0.4em; max-width: 600px; line-height: 1.6; color: rgba(255,255,255,0.8); }
-        .interactive-target { cursor: none; display: inline-block; padding: 0 5px; border-bottom: 1px solid var(--color-accent); transition: color 0.3s; }
-        .interactive-target:hover { color: #fff; }
+
+        /* Типографика */
+        h1 { 
+            font-size: 5vw; 
+            line-height: 1;
+            color: #fff; 
+            margin-bottom: 0.2em; 
+            font-weight: normal; 
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+        }
+        
+        p { 
+            font-family: 'Arial', sans-serif;
+            font-size: 0.9rem; 
+            letter-spacing: 0.05em;
+            max-width: 500px; 
+            line-height: 1.8; 
+            color: rgba(255,255,255,0.6); 
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            color: var(--color-accent);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .interactive-target { 
+            cursor: none; 
+            display: inline-block; 
+            padding-bottom: 2px; 
+            border-bottom: 1px solid var(--color-accent); 
+            color: #fff;
+            transition: color 0.3s, opacity 0.3s; 
+        }
+        .interactive-target:hover { 
+            color: var(--color-accent); 
+            opacity: 0.8;
+        }
 
         /* Кастомный Курсор */
         .cursor-outer, .cursor-inner {
@@ -57,16 +97,15 @@
             z-index: 9999;
             border-radius: 50%;
             top: 0; left: 0;
-            transform: translate(-50%, -50%); /* Center the div on coordinates */
+            transform: translate(-50%, -50%);
         }
         .cursor-outer {
             width: 40px; height: 40px;
-            border: 1px solid rgba(160, 138, 111, 0.5); /* Акцентный полупрозрачный */
-            mix-blend-mode: exclusion; /* Эффект инверсии цвета */
-            transition: width 0.3s, height 0.3s;
+            border: 1px solid rgba(160, 138, 111, 0.6);
+            mix-blend-mode: exclusion;
         }
         .cursor-inner {
-            width: 8px; height: 8px;
+            width: 6px; height: 6px;
             background-color: var(--color-accent);
         }
     </style>
@@ -92,94 +131,112 @@
 <body>
     <canvas id="webgl-canvas"></canvas>
     
-    <!-- Siblings to ensure correct positioning context -->
     <div class="cursor-outer"></div>
     <div class="cursor-inner"></div>
     
     <div id="content">
+        <!-- Секция 1: Главная (Title Fixed) -->
         <div class="section" id="section-1">
-            <h1>PLATO RUG</h1>
-            <p>Новый уровень цифрового <span class="interactive-target">премиум-опыта</span>, основанный на WebGL и GSAP.</p>
+            <div id="title-wrapper">
+                <span class="subtitle">Imperial Collection</span>
+                <h1 id="main-title">PLATO RUG</h1>
+                <p>Искусство плетения, застывшее в цифровом пространстве. <span class="interactive-target">Исследовать</span>.</p>
+            </div>
         </div>
+
+        <!-- Секция 2: Иммерсивный Скролл -->
         <div class="section" id="section-2">
-            <h1>Иммерсивный Скроллинг</h1>
-            <p>Элементы плавно <span class="interactive-target">выезжают</span> при прокрутке, обеспечивая эффект присутствия. Нажмите и перетащите фон, чтобы вращать ковер!</p>
+            <span class="subtitle">Experience</span>
+            <h1>Tactile<br>Immersion</h1>
+            <p>Каждое движение скролла раскрывает глубину текстуры. Эффект <span class="interactive-target">параллакса</span> соединяет вас с объектом.</p>
         </div>
+
+        <!-- Секция 3: 3D Объект -->
         <div class="section" id="section-3">
-            <h1>3D-Визуализация</h1>
-            <p>Реалистичная <span class="interactive-target">модель ковра</span> с динамическим освещением. Управляйте ей с помощью мыши.</p>
+            <span class="subtitle">Technology</span>
+            <h1>Real-Time<br>Rendering</h1>
+            <p>Физически корректный рендеринг (PBR) и динамическое освещение. Взаимодействуйте с <span class="interactive-target">моделью</span>.</p>
         </div>
     </div>
     
     <script>
-        // Регистрация GSAP плагинов
         gsap.registerPlugin(ScrollTrigger);
         
         // ==========================================================
-        // I. WebGL Scene (3D Ковер)
+        // I. WebGL Scene (Premium Setup)
         // ==========================================================
         const canvas = document.getElementById('webgl-canvas');
         const scene = new THREE.Scene();
-        // Fog for depth blending
-        scene.fog = new THREE.FogExp2(0x000000, 0.05);
+        // Темный туман для глубины и "кинематографичности"
+        scene.fog = new THREE.FogExp2(0x050505, 0.08);
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; // Более реалистичная цветопередача
+        renderer.outputEncoding = THREE.sRGBEncoding;
 
-        // 1. Освещение
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        // 1. Освещение (Dramatic/Contrast)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2); // Очень тусклый общий свет
         scene.add(ambientLight);
         
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-        directionalLight.position.set(5, 10, 7);
-        scene.add(directionalLight);
+        // Основной рисующий свет (SpotLight для теней и фокуса)
+        const spotLight = new THREE.SpotLight(0xffffff, 2);
+        spotLight.position.set(5, 15, 5);
+        spotLight.angle = Math.PI / 6;
+        spotLight.penumbra = 1;
+        scene.add(spotLight);
 
-        const pointLight = new THREE.PointLight(0xA08A6F, 1, 20);
-        pointLight.position.set(-5, 2, -5);
-        scene.add(pointLight);
+        // Контровой свет (Accent)
+        const rimLight = new THREE.PointLight(0xA08A6F, 1.5, 20);
+        rimLight.position.set(-5, 2, -5);
+        scene.add(rimLight);
 
-        // 2. Тестовый Объект (Плоскость-Ковер)
-        // Using a slightly more complex geometry for lighting interest
-        const geometry = new THREE.PlaneGeometry(8, 12, 32, 32); 
+        // 2. Объект (Ковер с PBR)
+        // Увеличиваем сегментацию для лучшего перелива света
+        const geometry = new THREE.PlaneGeometry(6, 9, 64, 64); 
         
-        // Modify geometry to simulate fabric waves slightly
+        // Создаем процедурную неровность (волны ткани)
         const pos = geometry.attributes.position;
         for (let i = 0; i < pos.count; i++) {
-            const z = Math.sin(pos.getY(i) * 0.5) * 0.2;
+            const x = pos.getX(i);
+            const y = pos.getY(i);
+            // Сложная волна для имитации складок
+            const z = Math.sin(y * 0.8) * 0.15 + Math.cos(x * 1.5) * 0.05;
             pos.setZ(i, z);
         }
         geometry.computeVertexNormals();
 
+        // Материал Standard (PBR)
         const material = new THREE.MeshStandardMaterial({ 
-            color: 0x333333,
-            roughness: 0.8,
-            metalness: 0.1,
-            side: THREE.DoubleSide
+            color: 0x2a2a2a, // Темно-серый уголь (премиум)
+            roughness: 0.6,  // Матовая шерсть
+            metalness: 0.1,  // Небольшой блеск шелка
+            side: THREE.DoubleSide,
+            flatShading: false
         });
         const carpetPlane = new THREE.Mesh(geometry, material);
-        carpetPlane.rotation.x = -Math.PI / 2.2; // Положить на пол, чуть под углом
+        carpetPlane.rotation.x = -Math.PI / 2.2; 
         scene.add(carpetPlane);
 
         // 3. Управление
-        camera.position.set(0, 2, 8);
+        camera.position.set(0, 3, 9);
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; // Плавное движение
-        controls.dampingFactor = 0.05;
-        controls.enableZoom = false; // Disable zoom to not conflict with scroll
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.5;
+        controls.enableDamping = true; 
+        controls.dampingFactor = 0.03; // Очень плавная инерция
+        controls.enableZoom = false; 
+        controls.enablePan = false;
+        controls.autoRotate = false; // Отключаем авто-вращение, заменим на скролл
 
-        // 4. Цикл Рендеринга
+        // 4. Цикл
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // Обновление OrbitControls
+            controls.update();
             renderer.render(scene, camera);
         };
         animate();
         
-        // 5. Обработчик размера
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -187,85 +244,110 @@
         });
 
         // ==========================================================
-        // II. Custom Cursor (GSAP)
+        // II. Custom Cursor (Tuned Responsiveness)
         // ==========================================================
         const cursorOuter = document.querySelector('.cursor-outer');
         const cursorInner = document.querySelector('.cursor-inner');
-        const interactiveTargets = document.querySelectorAll('.interactive-target');
+        const interactiveTargets = document.querySelectorAll('.interactive-target, h1');
         
-        // Initial position off-screen
         gsap.set([cursorOuter, cursorInner], { xPercent: -50, yPercent: -50, x: -100, y: -100 });
 
         window.addEventListener('mousemove', (e) => {
             const mouseX = e.clientX;
             const mouseY = e.clientY;
 
-            // Плавное следование внутреннего курсора (быстро)
+            // Inner: Instant
             gsap.to(cursorInner, {
                 x: mouseX,
                 y: mouseY,
                 duration: 0.1,
                 ease: "power1.out"
             });
-            // Плавное следование внешнего курсора (медленно / lerp)
+            // Outer: Faster response (0.15s) for premium feel
             gsap.to(cursorOuter, {
                 x: mouseX,
                 y: mouseY,
-                duration: 0.5,
+                duration: 0.15,
                 ease: "power2.out"
             });
         });
 
-        // Эффект наведения
         interactiveTargets.forEach(target => {
             target.addEventListener('mouseenter', () => {
-                gsap.to(cursorOuter, { width: 80, height: 80, opacity: 0.5, duration: 0.3 });
+                gsap.to(cursorOuter, { scale: 2, borderColor: "transparent", backgroundColor: "rgba(160, 138, 111, 0.2)", duration: 0.3 });
                 gsap.to(cursorInner, { scale: 0.5, duration: 0.3 });
             });
             target.addEventListener('mouseleave', () => {
-                gsap.to(cursorOuter, { width: 40, height: 40, opacity: 1, duration: 0.3 });
+                gsap.to(cursorOuter, { scale: 1, borderColor: "rgba(160, 138, 111, 0.6)", backgroundColor: "transparent", duration: 0.3 });
                 gsap.to(cursorInner, { scale: 1, duration: 0.3 });
             });
         });
 
         // ==========================================================
-        // III. ScrollTrigger Animation (GSAP)
+        // III. Scroll Animation (Premium UX)
         // ==========================================================
-        const sections = document.querySelectorAll('.section');
-        sections.forEach(section => {
-            // Animate content inside section
-            const content = section.querySelectorAll('h1, p');
-            
-            gsap.from(content, {
+        
+        // 1. Фиксация заголовка (Pinning)
+        ScrollTrigger.create({
+            trigger: "#section-1",
+            start: "top top",
+            end: "bottom top", // Фиксируем на высоту одной секции
+            pin: "#title-wrapper",
+            pinSpacing: false, // Текст следующей секции наезжает сверху
+            scrub: true
+        });
+
+        // Анимация исчезновения первого заголовка при скролле
+        gsap.to("#title-wrapper", {
+            opacity: 0,
+            scale: 0.9,
+            scrollTrigger: {
+                trigger: "#section-1",
+                start: "top top",
+                end: "bottom 20%",
+                scrub: true
+            }
+        });
+
+        // 2. Анимация появления контента ("Рывок" - Expo.out)
+        const contentSections = document.querySelectorAll('#section-2, #section-3');
+        contentSections.forEach(section => {
+            const elements = section.querySelectorAll('span, h1, p');
+            gsap.from(elements, {
+                y: 80,
                 opacity: 0,
-                y: 50, 
-                duration: 1.2,
+                duration: 1.5,
                 stagger: 0.1,
-                ease: "power3.out",
+                ease: "expo.out", // Резкий старт, плавный финиш (Премиум)
                 scrollTrigger: {
                     trigger: section,
-                    start: "top 75%", // Начать, когда секция достигнет 75% от верха
+                    start: "top 70%",
                     toggleActions: "play none none reverse"
                 }
             });
         });
 
-        // Дополнительная анимация: 3D-модель (ковёр) вращается/сдвигается при скролле
-        // We use a timeline to orchestrate 3D moves with scroll
-        const tl = gsap.timeline({
+        // 3. 3D Параллакс (Привязка к скроллу)
+        const tl3d = gsap.timeline({
             scrollTrigger: {
                 trigger: "#content",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 1
+                scrub: 1 // Небольшая задержка для плавности
             }
         });
-        
-        // Rotate carpet as user scrolls down
-        tl.to(carpetPlane.rotation, {
-            z: Math.PI / 4, 
+
+        // Одновременное вращение и сдвиг камеры
+        tl3d.to(carpetPlane.rotation, {
+            y: 0.5, // Поворот ковра боком
+            z: 0.1, // Легкий наклон
             ease: "none"
-        });
+        }, 0)
+        .to(camera.position, {
+            z: 7, // Приближение камеры (zoom in)
+            y: 4, // Подъем выше
+            ease: "none"
+        }, 0);
 
     </script>
 </body>
