@@ -3,445 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLATO RUG | TEXTURAL REVEAL P-37</title>
+    <title>PLATO RUG | Cinematic Experience</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Syncopate:wght@400;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
-        /* Базовый сброс и переменные */
-        body { margin: 0; overflow-x: hidden; background-color: #050505; color: #E0E0E0; cursor: none; font-family: 'Times New Roman', serif; }
         :root {
-            --color-background: #050505;
-            --color-text: #E0E0E0;
-            --color-accent: #A08A6F; /* Золотисто-бронзовый */
-            --font-family-serif: 'Times New Roman', serif;
+            --color-bg: #050505;
+            --color-text: #e0e0e0;
+            --color-gold: #D4AF37;
+            --color-dim: #444;
         }
 
-        /* WebGL Холст */
-        #webgl-canvas { 
-            position: fixed; 
-            top: 0; left: 0; 
-            z-index: 0; 
-            display: block; 
-            opacity: 0; /* JS включит его сразу для эффекта "Live" */
-            filter: blur(8px); /* Начальный текстурный блюр */
-            transform: scale(1.1);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* HTML Контент */
-        #content {
-            position: relative;
-            z-index: 10;
-        }
-        
-        .section {
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            width: 100vw;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 3em;
-            text-align: center;
-            padding: 0 10%;
-            pointer-events: none; /* Пропускаем клики к канвасу */
-            box-sizing: border-box; 
+            cursor: none;
         }
-        .section > * {
-            pointer-events: auto;
-        }
-        .section h1 { 
-            color: #fff; 
-            margin-bottom: 0.2em; 
-            text-transform: uppercase; 
-            font-weight: 100;
-            letter-spacing: 0.05em;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .section p { 
-            font-size: 0.4em; 
-            max-width: 600px; 
-            color: rgba(255,255,255,0.7); 
-            line-height: 1.6;
-            font-family: Arial, sans-serif;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-        .interactive-target { cursor: none; display: inline-block; padding-bottom: 5px; border-bottom: 1px solid var(--color-accent); transition: color 0.3s; }
-        .interactive-target:hover { color: var(--color-accent); border-color: #fff; }
 
-        /* Кастомный Курсор */
-        .cursor-outer, .cursor-inner {
-            pointer-events: none;
+        /* === CUSTOM CURSOR === */
+        .cursor-dot {
             position: fixed;
-            z-index: 9999;
-            border-radius: 50%;
             top: 0; left: 0;
-            transform: translate(-50%, -50%);
-        }
-        .cursor-outer {
-            width: 40px; height: 40px;
-            border: 1px solid rgba(160, 138, 111, 0.5);
-            mix-blend-mode: exclusion;
-        }
-        .cursor-inner {
             width: 6px; height: 6px;
-            background-color: var(--color-accent);
+            background-color: var(--color-gold);
+            border-radius: 50%;
+            z-index: 10000;
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+        .cursor-circle {
+            position: fixed;
+            top: 0; left: 0;
+            width: 40px; height: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            z-index: 10000;
+            pointer-events: none;
+            transition: transform 0.1s;
         }
 
-        /* 🔥 Стили Прелоадера P-37: Textural Reveal */
-        #loader-overlay {
+        /* === ADVANCED PRELOADER (THE LOOM) === */
+        #loader-container {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-color: transparent; /* P-37: Прозрачный, чтобы видеть живой 3D фон */
-            z-index: 1000;
+            z-index: 5000;
+            background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(2px); /* Легкая дымка для читаемости лого */
-        }
-        
-        .loader-content-wrap {
-            text-align: center;
-            width: 100%;
-            overflow: visible;
+            overflow: hidden;
         }
 
-        .loader-logo-split {
-            font-family: var(--font-family-serif);
-            color: var(--color-accent);
-            font-size: 3em; 
-            letter-spacing: 0.2em;
+        /* Канвас для генеративного шума и частиц */
+        #loader-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0.4;
+        }
+
+        .loader-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            mix-blend-mode: lighten;
+        }
+
+        .loader-title {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            font-size: 4rem;
+            letter-spacing: -0.05em;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.8);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loader-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0;
+            width: 0%;
+            height: 100%;
+            color: var(--color-gold);
+            -webkit-text-stroke: 0px;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: width 0s; /* Управляется JS */
+        }
+
+        .loader-status {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 10px;
+            letter-spacing: 0.1em;
             display: flex;
             justify-content: center;
-            white-space: nowrap;
-            opacity: 0; 
+            gap: 20px;
+        }
+
+        .tech-data {
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            color: var(--color-gold);
+            opacity: 0.7;
             text-transform: uppercase;
-            text-shadow: 0 20px 40px rgba(0,0,0,0.8); /* Тень для контраста с 3D */
         }
 
-        .logo-left, .logo-right {
-            display: inline-block;
-            position: relative;
-            will-change: transform, opacity;
+        /* Шторки для перехода */
+        .curtain {
+            position: absolute;
+            top: 0;
+            width: 51%; /* Чуть больше половины для перекрытия */
+            height: 100%;
+            background: #050505;
+            z-index: 4000;
+            transform: scaleX(1);
+            transform-origin: center;
+        }
+        .curtain-left { left: 0; transform-origin: left; }
+        .curtain-right { right: 0; transform-origin: right; }
+
+        /* === MAIN SITE UI === */
+        #webgl-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
         }
 
-        /* Элегантная линия прогресса */
-        #loader-bar-container {
-            width: 150px;
-            height: 1px;
-            background-color: rgba(160, 138, 111, 0.2);
-            margin: 30px auto 0;
-            overflow: hidden;
-            opacity: 0; 
+        #ui-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* Навигация и контент - стиль Luxury */
+        nav {
+            position: absolute;
+            top: 50px;
+            width: 100%;
+            padding: 0 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .logo-mark {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            color: #fff;
+        }
+
+        .nav-links span {
+            display: block;
+            text-align: right;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.6);
+            cursor: none;
+            pointer-events: auto;
+            transition: color 0.3s;
+        }
+        .nav-links span:hover { color: var(--color-gold); }
+
+        .hero-content {
+            position: absolute;
+            bottom: 80px;
+            left: 80px;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 6vw;
+            line-height: 0.9;
+            color: #fff;
+            margin-bottom: 20px;
         }
         
-        #loader-bar {
-            height: 100%;
-            width: 100%;
-            background-color: var(--color-accent);
-            transform: scaleX(0); 
-            transform-origin: left center;
+        h1 i {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            color: var(--color-gold);
         }
+
+        .hero-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.7);
+            border-left: 1px solid var(--color-gold);
+            padding-left: 20px;
+            margin-top: 30px;
+        }
+
     </style>
-    
-    <!-- Scripts (Global CDN) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://aistudiocdn.com/react@^19.2.1",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-        "react/": "https://aistudiocdn.com/react@^19.2.1/",
-        "three": "https://aistudiocdn.com/three@^0.181.2",
-        "gsap": "https://aistudiocdn.com/gsap@^3.13.0",
-        "gsap/": "https://aistudiocdn.com/gsap@^3.13.0/"
-      }
-    }
-    </script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "three": "https://aistudiocdn.com/three@^0.181.2",
+    "gsap": "https://aistudiocdn.com/gsap@^3.13.0",
+    "gsap/": "https://aistudiocdn.com/gsap@^3.13.0/"
+  }
+}
+</script>
 </head>
 <body>
-    <!-- Preloader P-37 Structure -->
-    <div id="loader-overlay">
-        <div class="loader-content-wrap">
-            <div class="loader-logo-split">
-                <!-- P-37 Split: PLATO | RUG -->
-                <span class="logo-left">PLATO</span><span class="logo-right">RUG</span>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <div id="loader-container">
+        <canvas id="loader-canvas"></canvas>
+        <div class="loader-content">
+            <div class="loader-title" data-text="PLATO">PLATO</div>
+            <div class="loader-status">
+                <span id="loader-phase">INITIALIZING LOOM</span>
             </div>
-            <div id="loader-bar-container">
-                <div id="loader-bar"></div>
+            <div class="tech-data">
+                <span id="kpsi-counter">0000</span> KNOTS / SQ.INCH
             </div>
         </div>
     </div>
+
+    <div class="curtain curtain-left"></div>
+    <div class="curtain curtain-right"></div>
 
     <canvas id="webgl-canvas"></canvas>
-    
-    <div class="cursor-outer"></div>
-    <div class="cursor-inner"></div>
-    
-    <div id="content">
-        <!-- Section 1: Hero Pinning -->
-        <div class="section" id="section-1">
-            <h1>PLATO RUG</h1>
-            <p>Переосмысление ковроткачества. <br>Искусство, погруженное в <span class="interactive-target">цифровую реальность</span>.</p>
-        </div>
-        
-        <!-- Section 2 -->
-        <div class="section" id="section-2">
-            <h1>Бесшовный Дизайн</h1>
-            <p>Исследуйте текстуры, материалы и тени. <br>Наши 3D-модели — это абсолютный <span class="interactive-target">фотореализм</span> в браузере.</p>
-        </div>
-        
-        <!-- Section 3 -->
-        <div class="section" id="section-3">
-            <h1>Прокрутите Сюжет</h1>
-            <p>Управляйте визуализацией с помощью интуитивного скроллинга. <br>Каждая <span class="interactive-target">деталь</span> имеет значение.</p>
+
+    <div id="ui-layer">
+        <nav>
+            <div class="logo-mark">PLATO</div>
+            <div class="nav-links">
+                <span>COLLECTION 2025</span>
+                <span>BESPOKE STUDIO</span>
+                <span>THE ATELIER</span>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h1>Weaving <br> <i>Silence & Time</i></h1>
+            <p class="hero-desc">
+                Процедурная генерация текстур ручной работы.<br>
+                Каждая нить уникальна. Искусство цифрового ремесла.
+            </p>
         </div>
     </div>
-    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
     <script>
-        // ==========================================================
-        // I. WebGL Scene & Logic (Initialized Early)
-        // ==========================================================
+        // ==========================================
+        // 1. ADVANCED LOADER ANIMATION (CANVAS 2D)
+        // ==========================================
+        const loaderCanvas = document.getElementById('loader-canvas');
+        const lCtx = loaderCanvas.getContext('2d');
+        let lWidth, lHeight;
         
+        const particles = [];
+        const lines = [];
+
+        function initLoader() {
+            lWidth = loaderCanvas.width = window.innerWidth;
+            lHeight = loaderCanvas.height = window.innerHeight;
+
+            // Создаем "нити" (вертикальные линии)
+            for(let i=0; i<30; i++) {
+                lines.push({
+                    x: Math.random() * lWidth,
+                    speed: 0.5 + Math.random() * 2,
+                    opacity: 0.1 + Math.random() * 0.3,
+                    height: 0
+                });
+            }
+        }
+
+        function animateLoaderCanvas() {
+            // Эффект "шлейфа" для кинематографичности
+            lCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            lCtx.fillRect(0, 0, lWidth, lHeight);
+
+            // Отрисовка нитей (Matrix style но более элегантно)
+            lCtx.strokeStyle = '#D4AF37';
+            lines.forEach(line => {
+                lCtx.beginPath();
+                lCtx.globalAlpha = line.opacity;
+                lCtx.moveTo(line.x, 0);
+                lCtx.lineTo(line.x, line.height);
+                lCtx.stroke();
+                
+                line.height += line.speed * 5;
+                if(line.height > lHeight) {
+                    line.height = 0;
+                    line.x = Math.random() * lWidth;
+                }
+            });
+            
+            // Добавляем шум (Grain)
+            for(let i=0; i<100; i++) {
+                lCtx.fillStyle = Math.random() > 0.5 ? '#fff' : '#D4AF37';
+                lCtx.globalAlpha = Math.random() * 0.5;
+                lCtx.fillRect(Math.random()*lWidth, Math.random()*lHeight, 1, 1);
+            }
+
+            requestAnimationFrame(animateLoaderCanvas);
+        }
+
+        initLoader();
+        const loaderAnimFrame = requestAnimationFrame(animateLoaderCanvas);
+
+        // ==========================================
+        // 2. CURSOR LOGIC
+        // ==========================================
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursorDot, { x: e.clientX - 3, y: e.clientY - 3, duration: 0.1 });
+            gsap.to(cursorCircle, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.4 });
+        });
+
+        // ==========================================
+        // 3. THREE.JS SCENE (PROCEDURAL RUG)
+        // ==========================================
         const canvas = document.getElementById('webgl-canvas');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x050505, 0.02);
-        
+        // scene.fog = new THREE.FogExp2(0x050505, 0.03); // Убрали туман для чистоты картинки при зуме
+
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
         
-        // 🔥 P-37: Start Position (Macro / Extreme Close-up)
-        camera.position.set(0, 3, 2); 
+        // Начальная позиция камеры (очень далеко для эффекта зума)
+        camera.position.set(0, 30, 0); 
         camera.lookAt(0, 0, 0);
-        
+
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.physicallyCorrectLights = true;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-        scene.add(ambientLight);
+        // --- RUG GENERATION (Optimized) ---
+        function createRugTexture() {
+            const size = 1024;
+            const ctx = document.createElement('canvas').getContext('2d');
+            ctx.canvas.width = size;
+            ctx.canvas.height = size;
+
+            // База
+            ctx.fillStyle = '#6e6e6e'; 
+            ctx.fillRect(0, 0, size, size);
+            
+            // Шум ворса
+            for (let i = 0; i < 60000; i++) {
+                const x = Math.random() * size;
+                const y = Math.random() * size;
+                const grey = Math.floor(Math.random() * 60 + 80);
+                ctx.fillStyle = `rgba(${grey},${grey},${grey}, 0.15)`;
+                ctx.fillRect(x, y, 2, 2);
+            }
+
+            // Геометрический арт-узор
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 15;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2.5, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Золотая нить (акцент)
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, size/2);
+            ctx.bezierCurveTo(size/3, size/3, size/1.5, size/1.5, size, size/2);
+            ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(ctx.canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(2, 2); 
+            return texture;
+        }
+
+        const rugTexture = createRugTexture();
+        const geometry = new THREE.PlaneGeometry(5, 7, 200, 200); // Портретная ориентация ковра
         
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        directionalLight.position.set(5, 10, 7);
-        directionalLight.castShadow = true;
-        scene.add(directionalLight);
+        const material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            map: rugTexture,
+            displacementMap: rugTexture,
+            displacementScale: 0.2,
+            roughness: 0.8,
+            roughnessMap: rugTexture,
+            normalMap: rugTexture,
+            normalScale: new THREE.Vector2(1, 1)
+        });
 
-        const rimLight = new THREE.SpotLight(0xA08A6F, 2);
-        rimLight.position.set(-5, 5, -5);
-        rimLight.lookAt(0, 0, 0);
+        const rug = new THREE.Mesh(geometry, material);
+        rug.rotation.x = -Math.PI / 2;
+        rug.receiveShadow = true;
+        rug.castShadow = true;
+        scene.add(rug);
+
+        // --- LIGHTING ---
+        const ambLight = new THREE.AmbientLight(0xffffff, 0.2);
+        scene.add(ambLight);
+
+        const spotLight = new THREE.SpotLight(0xffeeb1, 2.5);
+        spotLight.position.set(5, 12, 5);
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 2048;
+        spotLight.shadow.mapSize.height = 2048;
+        spotLight.shadow.bias = -0.0001;
+        scene.add(spotLight);
+
+        const rimLight = new THREE.DirectionalLight(0x4444ff, 0.8);
+        rimLight.position.set(-5, 1, -5);
         scene.add(rimLight);
 
-        // Object
-        const geometry = new THREE.PlaneGeometry(7, 10); 
-        const material = new THREE.MeshStandardMaterial({ 
-            color: 0x888888, 
-            side: THREE.DoubleSide,
-            roughness: 0.6,
-            metalness: 0.1,
-        });
-        const carpetPlane = new THREE.Mesh(geometry, material);
-        carpetPlane.rotation.x = -Math.PI / 2; 
-        
-        // Initial state
-        carpetPlane.receiveShadow = true;
-        carpetPlane.castShadow = true;
-        scene.add(carpetPlane);
-
-        // Render Loop (Must run immediately for P-37 live background)
+        // --- LOOP ---
+        const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
+            const t = clock.getElapsedTime();
+            // Едва заметное дыхание ковра
+            rug.position.y = Math.sin(t * 0.3) * 0.02;
             renderer.render(scene, camera);
-        };
-        animate(); // Start immediately
+        }
+        animate();
 
-        // Resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            lWidth = loaderCanvas.width = window.innerWidth;
+            lHeight = loaderCanvas.height = window.innerHeight;
         });
 
-
-        // ==========================================================
-        // II. Preloader Logic P-37 (Textural Reveal)
-        // ==========================================================
-        const loaderOverlay = document.getElementById('loader-overlay');
-        const loaderBar = document.getElementById('loader-bar');
-        const loaderBarContainer = document.getElementById('loader-bar-container');
-        const logoSplit = document.querySelector('.loader-logo-split');
-        const logoLeft = document.querySelector('.logo-left');
-        const logoRight = document.querySelector('.logo-right');
-
-        // 1. Анимация появления логотипа
-        gsap.to([logoSplit, loaderBarContainer], {
-            opacity: 1,
-            y: 0,
-            duration: 1.2,
-            ease: "power2.out",
-            delay: 0.2
-        });
-
-        // 🔥 P-37.II: Анимация Фона во Время Загрузки
-        function animateLoading() {
-            // Камера медленно отъезжает и смещается во время загрузки (Annie Leibovitz)
-            gsap.to(camera.position, {
-                z: 4, // Отъезжаем назад
-                y: 4, // Смещаемся вверх
-                duration: 4, // Длительность равна времени загрузки
-                ease: "power2.inOut",
-            });
-            // Ковер медленно вращается, демонстрируя текстуру
-            gsap.to(carpetPlane.rotation, {
-                z: 0.2, 
-                duration: 4, 
-                ease: "power2.inOut",
-            });
-        }
-
-        // 2. Симуляция загрузки
-        function startLoadingSimulation() {
-            // Включаем видимость канваса сразу, чтобы видеть анимацию animateLoading
-            gsap.to(canvas, { opacity: 1, duration: 0.8 });
-            
-            animateLoading(); // Запуск кинематографии
-            
-            gsap.to(loaderBar, {
-                scaleX: 1,
-                duration: 4,
-                ease: "power2.inOut",
-                onComplete: () => {
-                    hidePreloader();
-                }
-            });
-        }
-
-        // 3. 🔥 P-37.III: Агрессивный Асимметричный Выход
-        function hidePreloader() {
-            const sections = document.querySelectorAll('.section');
-            
-            const tl = gsap.timeline({ defaults: { duration: 1.8, ease: "power4.out" } });
-
-            // 1. Асимметричный выход логотипа
-            tl.to(loaderBarContainer, { opacity: 0, duration: 0.3 }, 0) 
-              .to(logoLeft, { 
-                  x: '-100%', 
-                  y: '-100%', // 🔥 Вверх и влево (P-37.III)
-                  opacity: 0, 
-                  duration: 1.5, 
-                  ease: "back.inOut(1.5)" 
-              }, 0.2) 
-              .to(logoRight, { 
-                  x: '100%', 
-                  y: '100%', // 🔥 Вниз и вправо (P-37.III)
-                  opacity: 0, 
-                  duration: 1.5, 
-                  ease: "back.inOut(1.5)" 
-              }, 0.2)
-              
-            // 2. Полное раскрытие сцены и Фокус
-              .to(loaderOverlay, { 
-                  opacity: 0,
-                  display: 'none',
-                  duration: 1.2,
-              }, 1.5) 
-              .to(canvas, { 
-                  filter: 'blur(0px)', // Анимация Фокусировки
-                  scale: 1, 
-                  duration: 2.0, 
-                  ease: 'expo.inOut' 
-              }, 1.2) 
-              .to(camera.position, { 
-                  z: 5, y: 5, // 🔥 Финальная позиция камеры для скролла
-                  duration: 2.5, 
-                  ease: 'expo.inOut' 
-              }, 1.2)
-              
-            // 3. Staggered Content
-              .from(sections, { 
-                  opacity: 0, 
-                  y: 50, 
-                  duration: 1.5, 
-                  ease: 'expo.out', 
-                  stagger: 0.1 
-              }, 3.0);
-        }
-
-        window.onload = startLoadingSimulation;
-
-
-        // ==========================================================
-        // III. Custom Cursor
-        // ==========================================================
-        const cursorOuter = document.querySelector('.cursor-outer');
-        const cursorInner = document.querySelector('.cursor-inner');
+        // ==========================================
+        // 4. THE CINEMATIC SEQUENCE (GSAP)
+        // ==========================================
         
-        gsap.set([cursorOuter, cursorInner], { x: -100, y: -100 });
+        // 1. Симуляция загрузки (Counter)
+        let progress = { value: 0 };
+        const kpsiEl = document.getElementById('kpsi-counter');
+        const titleAfter = document.querySelector('.loader-title');
+        const statusEl = document.getElementById('loader-phase');
 
-        window.addEventListener('mousemove', (e) => {
-            gsap.to(cursorInner, {
-                x: e.clientX,
-                y: e.clientY,
-                duration: 0.1 
-            });
-            gsap.to(cursorOuter, {
-                x: e.clientX,
-                y: e.clientY,
-                duration: 0.15 
-            });
+        const tl = gsap.timeline();
+
+        tl.to(progress, {
+            value: 100,
+            duration: 4,
+            ease: "power2.inOut",
+            onUpdate: function() {
+                // Обновляем текст заголовка (эффект заливки золотом)
+                document.querySelector('.loader-title').style.setProperty('--p', this.progress() * 100 + '%');
+                document.querySelector('.loader-title::after').style.width = (this.progress() * 100) + '%';
+                
+                // Обновляем счетчик узлов
+                let knots = Math.floor(progress.value * 18); // 0 -> 1800
+                kpsiEl.textContent = knots.toString().padStart(4, '0');
+
+                // Меняем статус текст
+                if (progress.value > 30 && progress.value < 60) statusEl.textContent = "WEAVING GEOMETRY";
+                if (progress.value > 60 && progress.value < 90) statusEl.textContent = "APPLYING TEXTURES";
+                if (progress.value > 90) statusEl.textContent = "FINALIZING MASTERPIECE";
+            }
+        })
+        
+        // 2. Исчезновение текста загрузчика
+        .to(".loader-content", {
+            opacity: 0,
+            scale: 1.1,
+            duration: 0.5,
+            ease: "power2.in"
+        })
+        
+        // 3. Открытие "Штор" (Curtain Reveal)
+        .to(".curtain-left", { x: "-100%", duration: 1.5, ease: "power4.inOut" }, "reveal")
+        .to(".curtain-right", { x: "100%", duration: 1.5, ease: "power4.inOut" }, "reveal")
+        
+        // 4. Скрытие фона лоадера
+        .to("#loader-container", { autoAlpha: 0, duration: 0.1 }, "-=1.0")
+        
+        // 5. Драматичный влет камеры (Camera Drop)
+        .fromTo(camera.position, 
+            { y: 40, z: 0, x: 0 },
+            { y: 6, z: 3, x: 0, duration: 2.5, ease: "expo.out" }, 
+            "reveal+=0.2" // Начинаем чуть позже открытия штор
+        )
+        .fromTo(camera.rotation,
+            { x: -Math.PI/2 }, // Смотрит строго вниз
+            { x: -0.8, duration: 2.5, ease: "expo.out" },
+            "reveal+=0.2"
+        )
+
+        // 6. Появление UI
+        .to("#ui-layer", { opacity: 1, duration: 1 }, "-=1.0")
+        .from("h1", { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.5")
+        .from(".hero-desc", { x: -20, opacity: 0, duration: 1 }, "-=0.8")
+        .from(".nav-links span", { y: -20, opacity: 0, stagger: 0.1 }, "-=1.0");
+
+        // --- INTERACTIVE PARALLAX ---
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+            
+            // Только если загрузка завершена
+            if (!tl.isActive()) {
+                gsap.to(camera.position, {
+                    x: x * 0.5,
+                    y: 6 + y * 0.5,
+                    duration: 1
+                });
+                gsap.to(rug.rotation, {
+                    z: x * 0.05,
+                    duration: 1
+                });
+            }
         });
 
-        const targets = document.querySelectorAll('.interactive-target');
-        targets.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                gsap.to(cursorOuter, { scale: 2, opacity: 0.3, duration: 0.2 });
-            });
-            el.addEventListener('mouseleave', () => {
-                gsap.to(cursorOuter, { scale: 1, opacity: 1, duration: 0.2 });
-            });
-        });
-
-        // ==========================================================
-        // IV. ScrollTrigger
-        // ==========================================================
-        if (typeof ScrollTrigger !== 'undefined') {
-            gsap.registerPlugin(ScrollTrigger);
-
-            ScrollTrigger.create({
-                trigger: '#section-1',
-                start: 'top top',
-                end: 'bottom 50%',
-                pin: true,
-                pinSpacing: false,
-                onUpdate: (self) => {
-                    gsap.to('#section-1 h1, #section-1 p', { 
-                        opacity: 1 - self.progress * 1.5, 
-                        y: -50 * self.progress,
-                        duration: 0.1,
-                        overwrite: true
-                    });
-                }
-            });
-
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: "#content",
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 1 
-                }
-            });
-
-            tl.to(carpetPlane.rotation, { z: Math.PI * 1, ease: "none" }, 0)
-              .to(carpetPlane.position, { y: 2, ease: "none" }, 0); 
-        }
     </script>
 </body>
 </html>
