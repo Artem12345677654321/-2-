@@ -1,29 +1,20 @@
-<script setup lang="ts">
-// Импорты Three.js и GSAP временно убраны для отладки
-</script>
-
 <template>
-  <div class="test-container">
-    <h1 class="test-text">
-      ✅ VUE-ДВИЖОК ЗАПУЩЕН. ГОТОВЫ К WEBGL
+  <div class="test-fix-container">
+    <h1>
+      VUE RUNNING.
     </h1>
   </div>
 </template>
 
 <style scoped>
-.test-container {
+.test-fix-container {
+  /* Минимальный стиль для проверки, что фон виден */
   height: 100vh;
-  width: 100vw;
+  background-color: #202020; /* Темно-серый фон */
+  color: #fff; /* Белый текст */
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #050505; /* Фон PLATO RUG */
-}
-.test-text {
-  font-family: 'Playfair Display', serif;
-  color: #A08A6F; /* Акцентный цвет PLATO RUG */
-  font-size: 3em;
-  text-align: center;
-  z-index: 100;
+  font-size: 4em;
 }
 </style>
