@@ -1,25 +1,29 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
-import WebGlBackground from './components/WebGlBackground.vue';
-import CustomCursor from './components/CustomCursor.vue';
-import AnimatedHeading from './components/AnimatedHeading.vue';
-
-// Logic for cursor: pass mouse position to background
-const mousePosition = reactive({ x: 0, y: 0 });
-
-onMounted(() => {
-  window.addEventListener('mousemove', (e) => {
-    mousePosition.x = e.clientX;
-    mousePosition.y = e.clientY;
-  });
-});
+// Импорты Three.js и GSAP временно убраны для отладки
 </script>
 
 <template>
-  <CustomCursor />
-  <WebGlBackground :mousePosition="mousePosition" /> 
-  
-  <div style="position: relative; z-index: 10; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center;">
-      <AnimatedHeading text="PLATO RUG: Тест WebGL" className="text-5xl md:text-7xl font-serif text-white text-center" />
+  <div class="test-container">
+    <h1 class="test-text">
+      ✅ VUE-ДВИЖОК ЗАПУЩЕН. ГОТОВЫ К WEBGL
+    </h1>
   </div>
 </template>
+
+<style scoped>
+.test-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #050505; /* Фон PLATO RUG */
+}
+.test-text {
+  font-family: 'Playfair Display', serif;
+  color: #A08A6F; /* Акцентный цвет PLATO RUG */
+  font-size: 3em;
+  text-align: center;
+  z-index: 100;
+}
+</style>

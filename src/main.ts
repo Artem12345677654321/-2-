@@ -1,6 +1,15 @@
+// src/main.ts
 import { createApp } from 'vue';
-import App from './App.vue';
-import './styles/base.css';
+// Импортируем главный компонент
+import App from './App.vue'; 
+// Импортируем стили
+import './styles/base.css'; 
 
-const app = createApp(App);
-app.mount('#app');
+const mountPoint = document.getElementById('app');
+
+if (!mountPoint) {
+  console.error("КРИТИЧЕСКАЯ ОШИБКА: Элемент #app не найден в index.html. Проверьте ID.");
+} else {
+    // 💥 Монтируем приложение к элементу с id="app"
+    createApp(App).mount('#app'); 
+}
